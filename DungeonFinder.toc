@@ -1,0 +1,19 @@
+## Interface: 11302
+## Title: Dungeon Finder
+## Version: 0.1.0
+## Author: Ben
+## SavedVariablesPerCharacter: DungeonFinderDB
+
+Frame.xml
+
+Libs\AceComm-3.0\ChatThrottleLib.lua
+AddonMessage.lua
+
+Utils.lua
+UtilsUI.lua
+ScrollList.lua
+Dungeons.lua
+Player.lua
+Group.lua
+SavedVariables.lua
+DungeonFinder.lua
