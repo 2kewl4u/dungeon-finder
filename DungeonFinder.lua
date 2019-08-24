@@ -223,7 +223,7 @@ local dungeonInset = CreateFrame("Frame", nil, lfgDungeonFrame, "InsetFrameTempl
 dungeonInset:SetPoint("TOPLEFT", roleInset, "BOTTOMLEFT", 0, 0)
 dungeonInset:SetPoint("BOTTOMRIGHT", lfgDungeonFrame, "BOTTOMRIGHT", 0, 33)
 
-
+local categoryFilters = {}
 local dungeonScrollList = ScrollList.new("DungeonFinderDungeonScrollList", dungeonInset, 18, "LFRFrameDungeonChoiceTemplate")
 dungeonScrollList:SetPoint("TOPLEFT", dungeonInset, "TOPLEFT", 0, -6)
 dungeonScrollList:SetPoint("BOTTOMRIGHT", dungeonInset, "BOTTOMRIGHT", -26, 6)
@@ -297,14 +297,35 @@ dungeonScrollList:SetLabelProvider(function(index, dungeon, button)
         -- simply a category
         button.instanceName:SetFontObject("GameFontHighlightLeft");
         button.level:Hide()
-        button.expandOrCollapseButton:Show()
         button.instanceName:SetPoint("RIGHT", button, "RIGHT", 0, 0)
         button.lockedIndicator:Hide()
         button.enableButton:Enable()
         button.enableButton:Show()
+        
+        -- enable expand / collapse
+        button.expandOrCollapseButton:Show()
+        button.expandOrCollapseButton:SetScript("OnClick", function()
+            local state = categoryFilters[dungeon.name]
+            if (state) then
+                categoryFilters[dungeon.name] = nil
+            else
+                categoryFilters[dungeon.name] = true
+            end
+            dungeonScrollList:Update()
+        end)
+        if (categoryFilters[dungeon.name]) then
+            button.expandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-UP")
+        else
+            button.expandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-UP")
+        end
     end
     button.enableButton:SetPoint("LEFT", button.expandOrCollapseButton, "RIGHT", 6, 0)
     button.heroicIcon:Hide()
+end)
+dungeonScrollList:SetFilter(function(index, dungeon)
+    if (not dungeon.category or not categoryFilters[dungeon.category]) then
+        return true
+    end
 end)
 dungeonScrollList:Update()
 
