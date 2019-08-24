@@ -90,7 +90,7 @@ end
 local function checkGUID(guid, sender)
     if (guid) then
         local locClass, engClass, locRace, engRace, gender,
-             name, server = GetPlayerInfoByGUID(guid)
+            name, server = GetPlayerInfoByGUID(guid)
         sender = strsplit("-", sender, 2)
         return name == sender
     end
@@ -104,7 +104,7 @@ local function receiveAddonMessage(prefix, message, type, sender)
         print("invalid message")
         return -- invalid message
     end
-    
+
     if (prefix == EVENT_LFM and ns.DB.lfg) then
         local group = Group.decode(message)
         if (group) then
@@ -232,7 +232,7 @@ dungeonScrollList:SetButtonHeight(16)
 dungeonScrollList:SetContentProvider(function() return DUNGEON_LIST end)
 dungeonScrollList:SetLabelProvider(function(index, dungeon, button)
     local playerLevel = UnitLevel("player")
-    
+
     button.dungeon = dungeon
     button.instanceName:SetText(dungeon.name)
     button.level:SetPoint("RIGHT", button, "RIGHT", 0, 0)
@@ -377,16 +377,12 @@ groupScrollList:SetLabelProvider(function(guid, group, button)
     button.DataDisplay.RoleCount.DamagerCount:SetText("?")
     button.Name:SetText(group.name or "")
     button.ActivityName:SetText(group.dungeon or "")
-    
+
     -- add script to whisper the leader
     button:SetScript("OnClick", function()
         ChatFrame_SendTell(group.leader)
     end)
 end)
-groupScrollList:SetButtonScript("OnClick", function(index, button, guid, group)
-    -- TODO start whisper group leader
-
-    end)
 
 local cancelFindGroupButton = CreateFrame("Button", nil, lfgGroupFrame, "GameMenuButtonTemplate")
 cancelFindGroupButton:SetPoint("BOTTOM", lfgGroupFrame, "BOTTOM", 0, 6)
@@ -512,7 +508,7 @@ createGroupButton:SetSize(155, 20)
 createGroupButton:SetText("Create Group")
 createGroupButton:SetNormalFontObject("GameFontNormal")
 createGroupButton:SetScript("OnClick", function()
-    -- TODO check that all necessary fields are set
+    -- check that all necessary fields are set
     local dungeonName = lfmSelectDungeonDropDown.value
     local groupName = lfmNameEditBox:GetText()
     local roles = {}
@@ -606,16 +602,18 @@ lfmMemberScrollList:SetLabelProvider(function(guid, player, button)
             roleIcon:Hide()
         end
     end
-    
+
     -- add script to whisper the player
     button:SetScript("OnClick", function()
         ChatFrame_SendTell(player.name)
     end)
     button.InviteButton:SetScript("OnClick", function()
-        InviteUnit(player.name) 
+        InviteUnit(player.name)
     end)
     button.DeclineButton:SetScript("OnClick", function()
-        -- TODO remove the player from the list 
+        -- remove the player from the list
+        ns.DB.applicants[player.guid] = nil
+        refreshLFMFields()
     end)
 end)
 lfmMemberScrollList:Update()
@@ -669,6 +667,7 @@ end
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("VARIABLES_LOADED")
 eventFrame:RegisterEvent("CHAT_MSG_ADDON")
+eventFrame:RegisterEvent("RAID_TARGET_UPDATE")
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_LFM)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_LFG)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_CANCEL)
@@ -676,9 +675,18 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, arg4)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()
     elseif (event == "CHAT_MSG_ADDON") then
---        print("received addon message from "..arg4)
---        print(arg2)
-        AddonMessage.Receive(arg1, arg2, arg3, arg4, receiveAddonMessage)
+                print("received addon message from "..arg4)
+                print(arg2)
+        if (arg1 == EVENT_LFM or arg1 == EVENT_LFG or arg1 == EVENT_CANCEL) then
+            AddonMessage.Receive(arg1, arg2, arg3, arg4, receiveAddonMessage)
+        end
+    elseif (event == "RAID_TARGET_UPDATE") then
+        -- when joining a group, cancel the LFG
+        if (IsInGroup() and ns.DB.lfg) then
+            LFGCancel()
+            lfgDungeonFrame:Show()
+            lfgGroupFrame:Hide()
+        end
     end
 end)
 
