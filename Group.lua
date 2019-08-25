@@ -14,7 +14,7 @@ local Group = {
     created,
     comment,
     leader,
-    -- map role - count NYI
+    -- map class - count
     members
 }
 Group.__index = Group
@@ -59,10 +59,24 @@ function Group:needsPlayer(player)
     return true
 end
 
+function Group:updateMembers()
+    local group = self
+    local members = {}
+    utils.forEachRaidMember(function(name, rank, level, class)
+        local count = members[class] or 0
+        count = count + 1
+        members[class] = count
+    end)
+    group.members = members
+end
+
 function Group:encode()
     local group = self
     local roles = utils.toCSV(group.roles, function(k,v) return k end)
     local classes = utils.toCSV(group.classes, function(k,v) return k end)
+    local members = utils.toCSV(group.members, function(class, count)
+        return class..":"..tostring(count)
+    end)
 
     local list = {
         group.guid,
@@ -72,7 +86,8 @@ function Group:encode()
         classes,
         tostring(group.created),
         group.comment,
-        group.leader
+        group.leader,
+        members
     }
     return utils.toCSV(list, function(k, v) return v end, ";")
 end
@@ -92,6 +107,7 @@ function Group.decode(encoded)
         local created = tonumber(list[6])
         local comment = list[7]
         local leader = list[8]
+        local members = list[9]
         
         -- decode the roles and classes
         roles = utils.fromCSV(roles, function(list, element)
@@ -100,8 +116,15 @@ function Group.decode(encoded)
         classes = utils.fromCSV(classes, function(list, element)
             list[element] = true
         end)
+        members = utils.fromCSV(members, function(list, element)
+            local class, count = strsplit(":", element, 2)
+            count = tonumber(count)
+            if (class and count) then
+                list[class] = count
+            end
+        end)
         
-        local group = Group.new(name, dungeon, roles, classes, created, comment, leader)
+        local group = Group.new(name, dungeon, roles, classes, created, comment, leader, members)
         group.guid = guid
         return group
     end

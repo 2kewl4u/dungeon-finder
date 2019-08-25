@@ -9,6 +9,7 @@ local utils = ns.utils
 local utilsUI = ns.utilsUI
 
 local DUNGEON_LIST = ns.DUNGEON_LIST
+local DUNGEON_SET = ns.DUNGEON_SET
 
 -- constants
 local ROLE_TANK = "TANK"
@@ -20,13 +21,22 @@ local CLASS_PALADIN = "PALADIN"
 local CLASS_HUNTER = "HUNTER"
 local CLASS_ROGUE = "ROGUE"
 local CLASS_PRIEST = "PRIEST"
-local CLASS_DEATH_KNIGHT = "DEATHKNIGHT"
 local CLASS_SHAMAN = "SHAMAN"
 local CLASS_MAGE = "MAGE"
 local CLASS_WARLOCK = "WARLOCK"
-local CLASS_MONK = "MONK"
 local CLASS_DRUID = "DRUID"
-local CLASS_DEMON_HUNTER = "DEMONHUNTER"
+
+local RAID_ROLES = {
+    [CLASS_WARRIOR] = ROLE_TANK,
+    [CLASS_PALADIN] = ROLE_HEALER,
+    [CLASS_HUNTER] = ROLE_DAMAGER,
+    [CLASS_ROGUE] = ROLE_DAMAGER,
+    [CLASS_PRIEST] = ROLE_HEALER,
+    [CLASS_SHAMAN] = ROLE_HEALER,
+    [CLASS_MAGE] = ROLE_DAMAGER,
+    [CLASS_WARLOCK] = ROLE_DAMAGER,
+    [CLASS_DRUID] = ROLE_HEALER
+}
 
 -- communication
 local ADDON_CHANNEL = "DungeonFinder"
@@ -40,6 +50,7 @@ local refreshLFMFields
 local function LFMBroadcast()
     ns.DB.lfm = true
     ns.DB.applicants = {}
+    ns.DB.group:updateMembers()
     local msg = ns.DB.group:encode()
     local channelId = GetChannelName(ADDON_CHANNEL);
     AddonMessage.Send(EVENT_LFM, msg, "CHANNEL", channelId)
@@ -82,6 +93,7 @@ end
 
 local function respondWithLFM(sender)
     if (ns.DB.lfm) then
+        ns.DB.group:updateMembers()
         local msg = ns.DB.group:encode()
         AddonMessage.Send(EVENT_LFM, msg, "WHISPER", sender)
     end
@@ -449,11 +461,61 @@ groupScrollList:SetContentProvider(function()
     return ns.DB.dungeonGroups
 end)
 groupScrollList:SetLabelProvider(function(guid, group, button)
-    button.DataDisplay.RoleCount.TankCount:SetText("?")
-    button.DataDisplay.RoleCount.HealerCount:SetText("?")
-    button.DataDisplay.RoleCount.DamagerCount:SetText("?")
     button.Name:SetText(group.name or "")
     button.ActivityName:SetText(group.dungeon or "")
+    
+    -- role or class list
+    if (group.dungeon) then
+        local dungeon = DUNGEON_SET[group.dungeon]
+        if (dungeon) then
+            if (dungeon.maxPlayers > 5) then
+                -- show the roles
+                button.RoleDisplay:Show()
+                button.ClassDisplay:Hide()
+                
+                -- count the roles
+                local roleCount = {}
+                for class, count in pairs(group.members) do
+                    local role = RAID_ROLES[class]
+                    if (role) then
+                        local rc = roleCount[role] or 0
+                        rc = rc + count
+                        roleCount[role] = rc
+                    end
+                end
+                button.RoleDisplay.RoleCount.TankCount:SetText(tostring(roleCount[ROLE_TANK] or 0))
+                button.RoleDisplay.RoleCount.HealerCount:SetText(tostring(roleCount[ROLE_HEALER] or 0))
+                button.RoleDisplay.RoleCount.DamagerCount:SetText(tostring(roleCount[ROLE_DAMAGER] or 0))
+            else
+                -- show the classes
+                button.RoleDisplay:Hide()
+                button.ClassDisplay:Show()
+                local classIndex = 1
+                for class, count in pairs(group.members) do
+                    for i = 1, count do
+                        local classIcon = button.ClassDisplay.classIcons[classIndex]
+                        local coords = CLASS_ICON_TCOORDS[class]
+                        if (coords) then
+                            classIcon:Show()
+                            classIcon:SetTexCoord(unpack(coords))
+                        else
+                            classIcon:Hide()
+                        end
+                        classIndex = classIndex + 1
+                        if (classIndex > 5) then classIndex = 5 end
+                    end
+                end
+                -- hide all the other textures
+                for i = classIndex, 5 do
+                    local classIcon = button.ClassDisplay.classIcons[i]
+                    classIcon:Hide()
+                end
+            end
+        else
+            button.RoleDisplay:Hide()
+            button.ClassDisplay:Hide()
+        end
+    end
 
     -- add script to whisper the leader
     button:SetScript("OnClick", function()
@@ -752,8 +814,8 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, arg4)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()
     elseif (event == "CHAT_MSG_ADDON") then
-                print("received addon message from "..arg4)
-                print(arg2)
+--                print("received addon message from "..arg4)
+--                print(arg2)
         if (arg1 == EVENT_LFM or arg1 == EVENT_LFG or arg1 == EVENT_CANCEL) then
             AddonMessage.Receive(arg1, arg2, arg3, arg4, receiveAddonMessage)
         end

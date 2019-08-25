@@ -118,6 +118,19 @@ utils.fromCSV = function(csv, dec, delimiter)
     return list
 end
 
+utils.toEnglishClass = function(localizedClass)
+    if (localizedClass) then
+        for i = 1, GetNumClasses() do
+            local className, englishClass = GetClassInfo(i)
+            if (LOCALIZED_CLASS_NAMES_MALE[englishClass] == localizedClass
+                or LOCALIZED_CLASS_NAMES_FEMALE[englishClass] == localizedClass) then
+                return englishClass
+            end
+        end
+    end
+    return localizedClass    
+end
+
 ---
 -- Iterates over each raid member that is currently online and calls the given
 -- action with the raid member name.
@@ -132,15 +145,19 @@ utils.forEachRaidMember = function(action)
     if (action) then
         local playerName = UnitName("player")
         local memberCount = GetNumGroupMembers()
-        for index = 1, memberCount do
-            local name, rank, subgroup, level, class, fileName, 
-                  zone, online, isDead, role, isML = GetRaidRosterInfo(index)
-            if (playerName ~= name and online) then
-                action(name)
+        if (memberCount > 0) then
+            for index = 1, memberCount do
+                local name, rank, subgroup, level, class, fileName, 
+                      zone, online, isDead, role, isML = GetRaidRosterInfo(index)
+                -- the class is localized, we need to convert it to the english name
+                class = utils.toEnglishClass(class)
+                action(name, rank, level, class)
             end
+        else
+            -- if we are not in a group, we still execute the action on ourselves
+            local _, class = UnitClass("player")
+            action(playerName, 0, UnitLevel("player"), class)
         end
-        -- if we are not in a group, we still execute the action on ourselves
-        action(playerName)
     end
 end
 

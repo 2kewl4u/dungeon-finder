@@ -339,6 +339,58 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="DungeonFinderGroupClassesTemplate" virtual="true">
+		<Size x="125" y="17" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="ClassIcon1" parentArray="classIcons"
+					file="Interface\TargetingFrame\UI-Classes-Circles">
+					<Size x="17" y="17" />
+					<Anchors>
+						<Anchor point="RIGHT" x="-11" y="0" />
+					</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="0.25" />
+				</Texture>
+				<Texture parentKey="ClassIcon2" parentArray="classIcons"
+					file="Interface\TargetingFrame\UI-Classes-Circles">
+					<Size x="17" y="17" />
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.ClassIcon1"
+							relativePoint="LEFT" x="-4" y="0" />
+					</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="0.25" />
+				</Texture>
+				<Texture parentKey="ClassIcon3" parentArray="classIcons"
+					file="Interface\TargetingFrame\UI-Classes-Circles">
+					<Size x="17" y="17" />
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.ClassIcon2"
+							relativePoint="LEFT" x="-4" y="0" />
+					</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="0.25" />
+				</Texture>
+				<Texture parentKey="ClassIcon4" parentArray="classIcons"
+					file="Interface\TargetingFrame\UI-Classes-Circles">
+					<Size x="17" y="17" />
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.ClassIcon3"
+							relativePoint="LEFT" x="-4" y="0" />
+					</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="0.25" />
+				</Texture>
+				<Texture parentKey="ClassIcon5" parentArray="classIcons"
+					file="Interface\TargetingFrame\UI-Classes-Circles">
+					<Size x="17" y="17" />
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.ClassIcon4"
+							relativePoint="LEFT" x="-4" y="0" />
+					</Anchors>
+					<TexCoords left="0" right="0.25" top="0" bottom="0.25" />
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="DungeonFinderGroupDataDisplayTemplate"
 		virtual="true">
 		<Size x="125" y="24" />
@@ -347,6 +399,7 @@
 				inherits="RoleCountNoScriptsTemplate" />
 		</Frames>
 	</Frame>
+
 	<Button name="DungeonFinderRefreshButtonTemplate" virtual="true">
 		<Size x="32" y="32" />
 		<Layers>
@@ -434,8 +487,15 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="DataDisplay"
-				inherits="DungeonFinderGroupDataDisplayTemplate">
+			<Frame parentKey="RoleDisplay"
+				inherits="DungeonFinderGroupDataDisplayTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent"
+						relativePoint="RIGHT" x="0" y="-1" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ClassDisplay"
+				inherits="DungeonFinderGroupClassesTemplate" hidden="false">
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent"
 						relativePoint="RIGHT" x="0" y="-1" />

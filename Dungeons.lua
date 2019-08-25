@@ -254,12 +254,16 @@ local RAIDS = {
 ns.RAIDS = RAIDS
 
 local DUNGEON_LIST = {}
+local DUNGEON_SET = {}
 table.insert(DUNGEON_LIST, { name = CATEGORY_DUNGEON })
 for i, dungeon in ipairs(DUNGEONS) do
     table.insert(DUNGEON_LIST, dungeon)
+    DUNGEON_SET[dungeon.name] = dungeon
 end
 table.insert(DUNGEON_LIST, { name = CATEGORY_RAID })
 for i, raid in ipairs(RAIDS) do
     table.insert(DUNGEON_LIST, raid)
+    DUNGEON_SET[raid.name] = raid
 end
 ns.DUNGEON_LIST = DUNGEON_LIST
+ns.DUNGEON_SET = DUNGEON_SET
