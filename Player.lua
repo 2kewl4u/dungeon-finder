@@ -60,6 +60,11 @@ function Player:setLookingForDungeon(dungeon, enabled)
     end
 end
 
+function Player:clearLookingForDungeon()
+    local player = self
+    player.dungeons = {}
+end
+
 function Player:hasRole(role)
     if (role) then
         local player = self

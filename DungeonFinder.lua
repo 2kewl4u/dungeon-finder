@@ -224,7 +224,7 @@ dungeonInset:SetPoint("TOPLEFT", roleInset, "BOTTOMLEFT", 0, 0)
 dungeonInset:SetPoint("BOTTOMRIGHT", lfgDungeonFrame, "BOTTOMRIGHT", 0, 33)
 
 local categoryFilters = {}
-local dungeonScrollList = ScrollList.new("DungeonFinderDungeonScrollList", dungeonInset, 18, "LFRFrameDungeonChoiceTemplate")
+local dungeonScrollList = ScrollList.new("DungeonFinderDungeonScrollList", dungeonInset, 18, "DungeonFinderSpecificChoiceTemplate")
 dungeonScrollList:SetPoint("TOPLEFT", dungeonInset, "TOPLEFT", 0, -6)
 dungeonScrollList:SetPoint("BOTTOMRIGHT", dungeonInset, "BOTTOMRIGHT", -26, 6)
 dungeonScrollList:SetWidth(300)
@@ -235,12 +235,11 @@ dungeonScrollList:SetLabelProvider(function(index, dungeon, button)
 
     button.dungeon = dungeon
     button.instanceName:SetText(dungeon.name)
-    button.level:SetPoint("RIGHT", button, "RIGHT", 0, 0)
     if (dungeon.category) then
         -- a dungeon or raid
         button.expandOrCollapseButton:Hide()
         button.isCollapsed = false
-        button.instanceName:SetFontObject("GameFontNormalLeft");
+--        button.instanceName:SetFontObject("GameFontNormalLeft");
 
         -- check the required level of the player
         if (playerLevel < dungeon.requiredLevel) then
@@ -268,6 +267,7 @@ dungeonScrollList:SetLabelProvider(function(index, dungeon, button)
             if (dungeon.category) then
                 ns.DB.player:setLookingForDungeon(dungeon, button.enableButton:GetChecked())
             end
+            dungeonScrollList:Update()
         end)
 
         -- the level range
@@ -279,7 +279,6 @@ dungeonScrollList:SetLabelProvider(function(index, dungeon, button)
             levelText = dungeon.minimumLevel.." - "..dungeon.maximumLevel
         end
         button.level:SetText("("..levelText..")")
-        button.instanceName:SetPoint("RIGHT", button.level, "LEFT", -10, 0)
 
         -- the color for the level range
         local levelCompare
@@ -290,37 +289,94 @@ dungeonScrollList:SetLabelProvider(function(index, dungeon, button)
         else
             levelCompare = playerLevel
         end
+        -- TODO set the color for the dungeon text as well
         local difficultyColor = GetQuestDifficultyColor(levelCompare)
         button.level:SetFontObject(difficultyColor.font)
+        button.instanceName:SetFontObject(difficultyColor.font)
 
     else
+        local category = dungeon.name
+        -- returns 0 for no dungeons, 1 for at least 1 dungeon, 2 for all dungeons
+        local function dungeonsSelected()
+            local oneDungeonSelected = false
+            local allDungeonsSelected = true
+            for i, d in ipairs(DUNGEON_LIST) do
+                if (d.category and d.category == category and playerLevel >= d.requiredLevel) then
+                    if (ns.DB.player:isLookingForDungeon(d)) then
+                        oneDungeonSelected = true
+                    else
+                        allDungeonsSelected = false
+                    end
+                end
+            end
+            if (allDungeonsSelected and oneDungeonSelected) then
+                return 2
+            elseif (oneDungeonSelected) then
+                return 1
+            else
+                return 0
+            end
+        end
+        
         -- simply a category
         button.instanceName:SetFontObject("GameFontHighlightLeft");
         button.level:Hide()
-        button.instanceName:SetPoint("RIGHT", button, "RIGHT", 0, 0)
         button.lockedIndicator:Hide()
-        button.enableButton:Enable()
-        button.enableButton:Show()
         
         -- enable expand / collapse
         button.expandOrCollapseButton:Show()
         button.expandOrCollapseButton:SetScript("OnClick", function()
-            local state = categoryFilters[dungeon.name]
+            local state = categoryFilters[category]
             if (state) then
-                categoryFilters[dungeon.name] = nil
+                categoryFilters[category] = nil
             else
-                categoryFilters[dungeon.name] = true
+                categoryFilters[category] = true
             end
             dungeonScrollList:Update()
         end)
-        if (categoryFilters[dungeon.name]) then
+        if (categoryFilters[category]) then
             button.expandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-UP")
         else
             button.expandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-UP")
         end
+        
+        -- enable select/deselect all
+        button.enableButton:Enable()
+        button.enableButton:Show()
+        button.enableButton:SetScript("OnClick", function()
+            -- if at least one dungeon is select, we deselect all
+            if (dungeonsSelected() > 0) then
+                ns.DB.player:clearLookingForDungeon()
+            else
+                for i, d in ipairs(DUNGEON_LIST) do
+                    if (d.category and d.category == category and playerLevel >= d.requiredLevel) then
+                        ns.DB.player:setLookingForDungeon(d, true)
+                    end
+                end
+            end
+            dungeonScrollList:Update()
+        end)
+        local selection = dungeonsSelected()
+        if (selection == 2) then
+            button.enableButton:SetChecked(true)
+            button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
+            button.enableButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
+        elseif (selection == 1) then
+            button.enableButton:SetChecked(true)
+            button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-MultiCheck-Up");
+            button.enableButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-MultiCheck-Disabled");
+        else
+            button.enableButton:SetChecked(false)
+            button.enableButton:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check");
+            button.enableButton:SetDisabledCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check-Disabled");
+        end
     end
-    button.enableButton:SetPoint("LEFT", button.expandOrCollapseButton, "RIGHT", 6, 0)
-    button.heroicIcon:Hide()
+    -- show heroic icon if the dungeon's minimum level is higher than the player level
+    if (dungeon.category and playerLevel < dungeon.minimumLevel and playerLevel >= dungeon.requiredLevel) then
+        button.heroicIcon:Show()
+    else
+        button.heroicIcon:Hide()
+    end    
 end)
 dungeonScrollList:SetFilter(function(index, dungeon)
     if (not dungeon.category or not categoryFilters[dungeon.category]) then

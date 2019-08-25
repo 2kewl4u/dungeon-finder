@@ -58,6 +58,92 @@
 		<Size x="36" y="36" />
 	</Button>
 
+	<Frame name="DungeonFinderSpecificChoiceTemplate" virtual="true">
+		<Size x="340" y="16" />
+		<HitRectInsets>
+			<AbsInset left="25" right="58" top="0" bottom="0" />
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeroicIcon"
+					file="Interface/LFGFrame/UI-LFG-ICON-HEROIC" parentKey="heroicIcon">
+					<Size x="16" y="20" />
+					<Anchors>
+						<Anchor point="LEFT" x="2" y="-1" />
+					</Anchors>
+					<TexCoords left="0.0" right="0.5" top="0" bottom="0.625" />
+				</Texture>
+				<FontString name="$parentInstanceLevel"
+					inherits="GameFontNormal" justifyH="RIGHT" parentKey="level">
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="0" />
+					</Anchors>
+				</FontString>
+				<FontString name="$parentInstanceName"
+					inherits="GameFontNormal" justifyH="LEFT" parentKey="instanceName">
+					<Size x="0" y="16" />
+					<Anchors>
+						<Anchor point="LEFT" x="40" y="0" />
+						<Anchor point="RIGHT" relativeTo="$parentInstanceLevel"
+							relativePoint="LEFT" x="-10" y="0" />
+					</Anchors>
+				</FontString>
+				<Texture name="$parentLockedIndicator"
+					file="Interface/LFGFrame/UI-LFG-ICON-LOCK"
+					parentKey="lockedIndicator">
+					<Size x="12" y="14" />
+					<Anchors>
+						<Anchor point="LEFT" x="25" y="0" />
+					</Anchors>
+					<TexCoords left="0" right="0.71875" top="0"
+						bottom="0.875" />
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentEnableButton"
+				parentKey="enableButton">
+				<Size x="20" y="20" />
+				<Anchors>
+					<Anchor point="LEFT" x="21" y="0" />
+				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+				<PushedTexture
+					file="Interface\Buttons\UI-CheckBox-Down" />
+				<HighlightTexture
+					file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD" />
+				<CheckedTexture
+					file="Interface\Buttons\UI-CheckBox-Check" />
+				<DisabledCheckedTexture
+					file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+			</CheckButton>
+			<Button name="$parentExpandOrCollapseButton"
+				parentKey="expandOrCollapseButton">
+				<Size x="13" y="13" />
+				<Anchors>
+					<Anchor point="LEFT" x="3" y="0" />
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="1" right="-4" top="-2" bottom="-2" />
+				</HitRectInsets>
+				<NormalTexture
+					file="Interface\Buttons\UI-MinusButton-UP">
+					<Size x="16" y="16" />
+					<Anchors>
+						<Anchor point="LEFT" x="3" y="0" />
+					</Anchors>
+				</NormalTexture>
+				<HighlightTexture name="$parentHighlight"
+					file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+					<Size x="16" y="16" />
+					<Anchors>
+						<Anchor point="LEFT" x="3" y="0" />
+					</Anchors>
+				</HighlightTexture>
+			</Button>
+		</Frames>
+	</Frame>
+
 	<Button name="DungeonFinderClassButtonTemplate" virtual="true"
 		inherits="DungeonFinderRoleButtonTemplate">
 		<Size x="32" y="32" />
