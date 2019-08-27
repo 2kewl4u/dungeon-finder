@@ -103,6 +103,8 @@ function Player:encode()
     local roles = utils.toCSV(player.roles, function(k,v) return k end)
     local dungeons = utils.toCSV(player.dungeons, function(k,v) return k end)
     
+    -- update level
+    player.level = UnitLevel("player")
     local list = {
         player.guid,
         player.name,
