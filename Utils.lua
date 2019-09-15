@@ -118,15 +118,22 @@ utils.fromCSV = function(csv, dec, delimiter)
     return list
 end
 
+CLASS_NAMES_MALE = {}
+CLASS_NAMES_FEMALE = {}
+FillLocalizedClassList(CLASS_NAMES_MALE, false)
+FillLocalizedClassList(CLASS_NAMES_FEMALE, true)
 utils.toEnglishClass = function(localizedClass)
     if (localizedClass) then
-        for i = 1, GetNumClasses() do
-            local className, englishClass = GetClassInfo(i)
-            if (LOCALIZED_CLASS_NAMES_MALE[englishClass] == localizedClass
-                or LOCALIZED_CLASS_NAMES_FEMALE[englishClass] == localizedClass) then
-                return englishClass
-            end
-        end
+		for englishClass, className in pairs(CLASS_NAMES_MALE) do
+			if (className == localizedClass) then
+				return englishClass
+			end
+		end
+		for englishClass, className in pairs(CLASS_NAMES_FEMALE) do
+			if (className == localizedClass) then
+				return englishClass
+			end
+		end
     end
     return localizedClass    
 end

@@ -48,7 +48,7 @@ local refeshLFGFields
 local refreshLFMFields
 
 local function LFMBroadcast()
-    ns.DB.lfm = true
+	ns.DB.lfm = true
     ns.DB.applicants = {}
     ns.DB.group:updateMembers()
     local msg = ns.DB.group:encode()
@@ -103,13 +103,14 @@ local function checkGUID(guid, sender)
     if (guid) then
         local locClass, engClass, locRace, engRace, gender,
             name, server = GetPlayerInfoByGUID(guid)
-        sender = strsplit("-", sender, 2)
         return name == sender
     end
 end
 
 -- TODO add/remove register for channel on demand
 local function receiveAddonMessage(prefix, message, type, sender)
+    -- remove the realm part
+    sender = strsplit("-", sender, 2)
     -- verify that the message of the sender contains the player as guid
     local guid, rest = strsplit(";", message, 2)
     if (not checkGUID(guid, sender)) then
@@ -806,7 +807,7 @@ end
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("VARIABLES_LOADED")
 eventFrame:RegisterEvent("CHAT_MSG_ADDON")
-eventFrame:RegisterEvent("RAID_TARGET_UPDATE")
+--eventFrame:RegisterEvent("RAID_TARGET_UPDATE")
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_LFM)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_LFG)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_CANCEL)
@@ -814,8 +815,8 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, arg4)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()
     elseif (event == "CHAT_MSG_ADDON") then
---                print("received addon message from "..arg4)
---                print(arg2)
+        -- print("received addon message from "..arg4)
+        -- print(arg2)
         if (arg1 == EVENT_LFM or arg1 == EVENT_LFG or arg1 == EVENT_CANCEL) then
             AddonMessage.Receive(arg1, arg2, arg3, arg4, receiveAddonMessage)
         end
