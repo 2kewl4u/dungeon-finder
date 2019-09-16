@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Title: Dungeon Finder
-## Version: 0.1.4
+## Version: 0.1.5
 ## Author: Ben
 ## SavedVariablesPerCharacter: DungeonFinderDB
 

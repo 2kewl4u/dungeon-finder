@@ -484,9 +484,9 @@ groupScrollList:SetLabelProvider(function(guid, group, button)
                         roleCount[role] = rc
                     end
                 end
-                button.RoleDisplay.RoleCount.TankCount:SetText(tostring(roleCount[ROLE_TANK] or 0))
-                button.RoleDisplay.RoleCount.HealerCount:SetText(tostring(roleCount[ROLE_HEALER] or 0))
-                button.RoleDisplay.RoleCount.DamagerCount:SetText(tostring(roleCount[ROLE_DAMAGER] or 0))
+                button.RoleDisplay.TankCount:SetText(tostring(roleCount[ROLE_TANK] or 0))
+                button.RoleDisplay.HealerCount:SetText(tostring(roleCount[ROLE_HEALER] or 0))
+                button.RoleDisplay.DamagerCount:SetText(tostring(roleCount[ROLE_DAMAGER] or 0))
             else
                 -- show the classes
                 button.RoleDisplay:Hide()
