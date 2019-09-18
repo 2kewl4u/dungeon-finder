@@ -1,8 +1,14 @@
 ## Interface: 11302
-## Title: Dungeon Finder
-## Version: 0.1.5
+## Title: |cFFFFA800DungeonFinder |cFF0099FF[Lang-Patched]
 ## Author: Ben
-## SavedVariablesPerCharacter: DungeonFinderDB
+## Version: 0.1.51b
+## Notes: DungeonFinder Tool for World of Warcraft Classic
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## SavedVariables: DungeonFinderDB
+
+Libs.xml
+Locales\Locales.xml
 
 Frame.xml
 
