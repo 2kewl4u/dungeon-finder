@@ -3,6 +3,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("DungeonFinder", "deDE")
 
 if (L) then
 	-- UI related locales
+	L["DungeonFinder"]	= "DungeonFinder"
 	L["Dungeon Finder"]	= "Dungeon Finder"
 	L["Find Group"]			= "Suche Gruppe"
 	L["Dungeon Groups"]	= "Dungeon Gruppen"

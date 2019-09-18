@@ -2,6 +2,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("DungeonFinder", "enUS", true, true
 
 
 -- UI related locales
+L["DungeonFinder"]	= "DungeonFinder"
 L["Dungeon Finder"]	= "Dungeon Finder"
 L["Find Group"]			= "Find Group"
 L["Dungeon Groups"]	= "Dungeon Groups"
