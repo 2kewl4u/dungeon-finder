@@ -23,10 +23,10 @@ if (L) then
 	-- Class Names
 	L["WARRIOR"]	= "KRIEGER"
 	L["PALADIN"]	= "PALADIN"
-	L["HUNTER"]		= "HUNTER"
+	L["HUNTER"]		= "JÄGER"
 	L["ROGUE"]		= "SCHURKE"
 	L["PRIEST"]		= "PRIESTER"
-	L["SHAMAN"]		= "SHAMANE"
+	L["SHAMAN"]		= "SCHAMANE"
 	L["MAGE"]			= "MAGIER"
 	L["WARLOCK"]	= "HEXENMEISTER"
 	L["DRUID"]		= "DRUIDE"
@@ -44,7 +44,6 @@ if (L) then
 	L["Raid List"]		= "Schlachtzug Liste"
 
 		-- Dungeon Translation
-		L["Ragefire Chasm"]									= "Der Flammenschlund"
 		L["Ragefire Chasm"]									= "Der Flammenschlund"
 		L["Wailing Caverns"]								= "Die Höhlen des Wehklagens"
 		L["The Deadmines"]									= "Die Todesminen"
