@@ -1,55 +1,55 @@
 -- namespace
 local _, ns = ...;
 -- imports
-local playerLocale	= LibStub("AceLocale-3.0"):GetLocale("DungeonFinder")
-local AddonMessage	= ns.AddonMessage
-local Group					= ns.Group
-local Player				= ns.Player
-local ScrollList		= ns.ScrollList
-local utils					= ns.utils
-local utilsUI				= ns.utilsUI
+local playerLocale= LibStub("AceLocale-3.0"):GetLocale("DungeonFinder")
+local AddonMessage= ns.AddonMessage
+local Group= ns.Group
+local Player= ns.Player
+local ScrollList= ns.ScrollList
+local utils= ns.utils
+local utilsUI= ns.utilsUI
 
-local DUNGEON_LIST	= ns.DUNGEON_LIST
-local DUNGEON_SET		= ns.DUNGEON_SET
+local DUNGEON_LIST= ns.DUNGEON_LIST
+local DUNGEON_SET= ns.DUNGEON_SET
 
 -- constants
-local ROLE_TANK			= "TANK"
-local ROLE_HEALER		= "HEALER"
-local ROLE_DAMAGER	= "DAMAGER"
+local ROLE_TANK= "TANK"
+local ROLE_HEALER= "HEALER"
+local ROLE_DAMAGER= "DAMAGER"
 
-local CLASS_WARRIOR	= "WARRIOR"
-local CLASS_PALADIN	= "PALADIN"
-local CLASS_HUNTER	= "HUNTER"
-local CLASS_ROGUE		= "ROGUE"
-local CLASS_PRIEST	= "PRIEST"
-local CLASS_SHAMAN	= "SHAMAN"
-local CLASS_MAGE		= "MAGE"
-local CLASS_WARLOCK	= "WARLOCK"
-local CLASS_DRUID		= "DRUID"
+local CLASS_WARRIOR= "WARRIOR"
+local CLASS_PALADIN= "PALADIN"
+local CLASS_HUNTER= "HUNTER"
+local CLASS_ROGUE= "ROGUE"
+local CLASS_PRIEST= "PRIEST"
+local CLASS_SHAMAN= "SHAMAN"
+local CLASS_MAGE= "MAGE"
+local CLASS_WARLOCK= "WARLOCK"
+local CLASS_DRUID= "DRUID"
 
 local RAID_ROLES = {
-    [CLASS_WARRIOR]	= ROLE_TANK,
-    [CLASS_PALADIN]	= ROLE_HEALER,
-    [CLASS_HUNTER]	= ROLE_DAMAGER,
-    [CLASS_ROGUE]		= ROLE_DAMAGER,
-    [CLASS_PRIEST]	= ROLE_HEALER,
-    [CLASS_SHAMAN]	= ROLE_HEALER,
-    [CLASS_MAGE]		= ROLE_DAMAGER,
-    [CLASS_WARLOCK]	= ROLE_DAMAGER,
-    [CLASS_DRUID]		= ROLE_HEALER
+    [CLASS_WARRIOR]= ROLE_TANK,
+    [CLASS_PALADIN]= ROLE_HEALER,
+    [CLASS_HUNTER]= ROLE_DAMAGER,
+    [CLASS_ROGUE]= ROLE_DAMAGER,
+    [CLASS_PRIEST]= ROLE_HEALER,
+    [CLASS_SHAMAN]= ROLE_HEALER,
+    [CLASS_MAGE]= ROLE_DAMAGER,
+    [CLASS_WARLOCK]= ROLE_DAMAGER,
+    [CLASS_DRUID]= ROLE_HEALER
 }
 
 -- communication
-local ADDON_CHANNEL	= "DungeonFinder"
-local EVENT_LFM			= "DF_LFM"
-local EVENT_LFG			= "DF_LFG"
-local EVENT_CANCEL	= "DF_CANCEL"
+local ADDON_CHANNEL= "DungeonFinder"
+local EVENT_LFM= "DF_LFM"
+local EVENT_LFG= "DF_LFG"
+local EVENT_CANCEL= "DF_CANCEL"
 
 local refeshLFGFields
 local refreshLFMFields
 
 local function LFMBroadcast()
-	ns.DB.lfm = true
+    ns.DB.lfm = true
     ns.DB.applicants = {}
     ns.DB.group:updateMembers()
     local msg = ns.DB.group:encode()
@@ -253,7 +253,7 @@ dungeonScrollList:SetLabelProvider(function(index, dungeon, button)
         -- a dungeon or raid
         button.expandOrCollapseButton:Hide()
         button.isCollapsed = false
---        button.instanceName:SetFontObject("GameFontNormalLeft");
+        -- button.instanceName:SetFontObject("GameFontNormalLeft");
 
         -- check the required level of the player
         if (playerLevel < dungeon.requiredLevel) then
