@@ -21,7 +21,7 @@ utilsUI.createTabs = function(parentFrame, tabLabels)
         tabButton.contentFrame = tabFrame
         tabButton:SetText(tabLabels[tabIndex])
         tabs[tabIndex] = tabButton
-    
+
         tabButton:SetID(tabIndex)
         tabButton:SetScript("OnClick", function()
             PanelTemplates_SetTab(parentFrame, tabIndex)
@@ -38,7 +38,7 @@ utilsUI.createTabs = function(parentFrame, tabLabels)
         else
             tabButton:SetPoint("TOPLEFT", tabs[tabIndex - 1], "TOPRIGHT", -14, 0)
         end
-    
+
         tabFrame:SetPoint("TOPLEFT", parentFrame:GetName().."DialogBG", "TOPLEFT", 0, 0)
         tabFrame:SetPoint("BOTTOMRIGHT", parentFrame:GetName().."DialogBG", "BOTTOMRIGHT", 0, 0)
         if (tabIndex ~= 1) then tabFrame:Hide() end
@@ -50,10 +50,10 @@ end
 ---
 -- Toggles the given frame, thus shows or hides it depending on if it is
 -- currently shown. Note that this just works outside of combat.
--- 
+--
 -- @param #Frame frame
 --          the frame to show/hide
--- 
+--
 utilsUI.toggleUI = function(frame)
     if (not UnitAffectingCombat("player")) then
         if (frame:IsShown()) then
@@ -66,38 +66,38 @@ end
 
 ---
 -- Creates a border around the given frame.
--- 
+--
 -- @param #Frame frame
 --          the frame to create the border for
--- 
+--
 utilsUI.createBorder = function(frame)
     CreateFrame("Frame", nil, frame, "InsetFrameTemplate"):SetAllPoints()
 end
 
 ---
 -- Hides the GameTooltip.
--- 
+--
 utilsUI.hideTooltip = function()
-	GameTooltip:ClearLines()
+    GameTooltip:ClearLines()
     GameTooltip:Hide()
 end
 
 ---
 -- Shows a tooltip for the given player name.
--- 
+--
 -- @param #Frame owner
 --          defines the element where the tooltip is centered on
 -- @param #string playerName
 --          the name of the player
--- 
+--
 utilsUI.showPlayerTooltip = function(owner, playerName)
-	local unitName = playerName
-	local name, realm = UnitName(playerName)
-	if (name and realm) then
-		unitName = name.."-"..realm
-	end
-	GameTooltip:SetOwner(owner, "ANCHOR_BOTTOMRIGHT")
-	GameTooltip:SetUnit(unitName)
+    local unitName = playerName
+    local name, realm = UnitName(playerName)
+    if (name and realm) then
+        unitName = name.."-"..realm
+    end
+    GameTooltip:SetOwner(owner, "ANCHOR_BOTTOMRIGHT")
+    GameTooltip:SetUnit(unitName)
 end
 
 utilsUI.showItemTooltip = function(owner, itemId)

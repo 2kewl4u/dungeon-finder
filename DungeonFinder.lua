@@ -1,54 +1,55 @@
 -- namespace
 local _, ns = ...;
 -- imports
-local AddonMessage = ns.AddonMessage
-local Group = ns.Group
-local Player = ns.Player
-local ScrollList = ns.ScrollList
-local utils = ns.utils
-local utilsUI = ns.utilsUI
+local playerLocale= LibStub("AceLocale-3.0"):GetLocale("DungeonFinder")
+local AddonMessage= ns.AddonMessage
+local Group= ns.Group
+local Player= ns.Player
+local ScrollList= ns.ScrollList
+local utils= ns.utils
+local utilsUI= ns.utilsUI
 
-local DUNGEON_LIST = ns.DUNGEON_LIST
-local DUNGEON_SET = ns.DUNGEON_SET
+local DUNGEON_LIST= ns.DUNGEON_LIST
+local DUNGEON_SET= ns.DUNGEON_SET
 
 -- constants
-local ROLE_TANK = "TANK"
-local ROLE_HEALER = "HEALER"
-local ROLE_DAMAGER = "DAMAGER"
+local ROLE_TANK= "TANK"
+local ROLE_HEALER= "HEALER"
+local ROLE_DAMAGER= "DAMAGER"
 
-local CLASS_WARRIOR = "WARRIOR"
-local CLASS_PALADIN = "PALADIN"
-local CLASS_HUNTER = "HUNTER"
-local CLASS_ROGUE = "ROGUE"
-local CLASS_PRIEST = "PRIEST"
-local CLASS_SHAMAN = "SHAMAN"
-local CLASS_MAGE = "MAGE"
-local CLASS_WARLOCK = "WARLOCK"
-local CLASS_DRUID = "DRUID"
+local CLASS_WARRIOR= "WARRIOR"
+local CLASS_PALADIN= "PALADIN"
+local CLASS_HUNTER= "HUNTER"
+local CLASS_ROGUE= "ROGUE"
+local CLASS_PRIEST= "PRIEST"
+local CLASS_SHAMAN= "SHAMAN"
+local CLASS_MAGE= "MAGE"
+local CLASS_WARLOCK= "WARLOCK"
+local CLASS_DRUID= "DRUID"
 
 local RAID_ROLES = {
-    [CLASS_WARRIOR] = ROLE_TANK,
-    [CLASS_PALADIN] = ROLE_HEALER,
-    [CLASS_HUNTER] = ROLE_DAMAGER,
-    [CLASS_ROGUE] = ROLE_DAMAGER,
-    [CLASS_PRIEST] = ROLE_HEALER,
-    [CLASS_SHAMAN] = ROLE_HEALER,
-    [CLASS_MAGE] = ROLE_DAMAGER,
-    [CLASS_WARLOCK] = ROLE_DAMAGER,
-    [CLASS_DRUID] = ROLE_HEALER
+    [CLASS_WARRIOR]= ROLE_TANK,
+    [CLASS_PALADIN]= ROLE_HEALER,
+    [CLASS_HUNTER]= ROLE_DAMAGER,
+    [CLASS_ROGUE]= ROLE_DAMAGER,
+    [CLASS_PRIEST]= ROLE_HEALER,
+    [CLASS_SHAMAN]= ROLE_HEALER,
+    [CLASS_MAGE]= ROLE_DAMAGER,
+    [CLASS_WARLOCK]= ROLE_DAMAGER,
+    [CLASS_DRUID]= ROLE_HEALER
 }
 
 -- communication
-local ADDON_CHANNEL = "DungeonFinder"
-local EVENT_LFM = "DF_LFM"
-local EVENT_LFG = "DF_LFG"
-local EVENT_CANCEL = "DF_CANCEL"
+local ADDON_CHANNEL= "DungeonFinder"
+local EVENT_LFM= "DF_LFM"
+local EVENT_LFG= "DF_LFG"
+local EVENT_CANCEL= "DF_CANCEL"
 
 local refeshLFGFields
 local refreshLFMFields
 
 local function LFMBroadcast()
-	ns.DB.lfm = true
+    ns.DB.lfm = true
     ns.DB.applicants = {}
     ns.DB.group:updateMembers()
     local msg = ns.DB.group:encode()
@@ -168,7 +169,7 @@ UIFrame:SetAttribute("UIPanelLayout-width", WINDOW_WIDTH)
 UIFrame:SetAttribute("UIPanelLayout-whileDead", true)
 UIFrame:SetSize(WINDOW_WIDTH, WINDOW_HEIGHT)
 UIFrame:SetPoint("CENTER")
-UIFrame.Title:SetText("Dungeon Finder")
+UIFrame.Title:SetText(playerLocale["Dungeon Finder"])
 HideUIPanel(UIFrame)
 
 -- create tabs
@@ -247,12 +248,12 @@ dungeonScrollList:SetLabelProvider(function(index, dungeon, button)
     local playerLevel = UnitLevel("player")
 
     button.dungeon = dungeon
-    button.instanceName:SetText(dungeon.name)
+    button.instanceName:SetText(playerLocale[dungeon.name])
     if (dungeon.category) then
         -- a dungeon or raid
         button.expandOrCollapseButton:Hide()
         button.isCollapsed = false
---        button.instanceName:SetFontObject("GameFontNormalLeft");
+        -- button.instanceName:SetFontObject("GameFontNormalLeft");
 
         -- check the required level of the player
         if (playerLevel < dungeon.requiredLevel) then
@@ -330,12 +331,12 @@ dungeonScrollList:SetLabelProvider(function(index, dungeon, button)
                 return 0
             end
         end
-        
+
         -- simply a category
         button.instanceName:SetFontObject("GameFontHighlightLeft");
         button.level:Hide()
         button.lockedIndicator:Hide()
-        
+
         -- enable expand / collapse
         button.expandOrCollapseButton:Show()
         button.expandOrCollapseButton:SetScript("OnClick", function()
@@ -352,7 +353,7 @@ dungeonScrollList:SetLabelProvider(function(index, dungeon, button)
         else
             button.expandOrCollapseButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-UP")
         end
-        
+
         -- enable select/deselect all
         button.enableButton:Enable()
         button.enableButton:Show()
@@ -389,7 +390,7 @@ dungeonScrollList:SetLabelProvider(function(index, dungeon, button)
         button.heroicIcon:Show()
     else
         button.heroicIcon:Hide()
-    end    
+    end
 end)
 dungeonScrollList:SetFilter(function(index, dungeon)
     if (not dungeon.category or not categoryFilters[dungeon.category]) then
@@ -401,7 +402,7 @@ dungeonScrollList:Update()
 local findGroupButton = CreateFrame("Button", nil, lfgDungeonFrame, "GameMenuButtonTemplate")
 findGroupButton:SetPoint("BOTTOM", lfgDungeonFrame, "BOTTOM", 0, 6)
 findGroupButton:SetSize(155, 20)
-findGroupButton:SetText("Find Group")
+findGroupButton:SetText(playerLocale["Find Group"])
 findGroupButton:SetNormalFontObject("GameFontNormal")
 findGroupButton:SetScript("OnClick", function()
     if (ns.DB.player:isLFGReady()) then
@@ -425,7 +426,7 @@ end
 
 local lfgGroupLabel = lfgGroupFrame:CreateFontString(nil, "ARTWORK", "MailFont_Large")
 lfgGroupLabel:SetPoint("TOPLEFT", lfgGroupFrame, "TOPLEFT", 12, -15)
-lfgGroupLabel:SetText("Dungeon Groups")
+lfgGroupLabel:SetText(playerLocale["Dungeon Groups"])
 lfgGroupLabel:SetTextColor(1, 0.82, 0)
 
 local lfgRefreshButton = CreateFrame("Button", nil, lfgGroupFrame, "DungeonFinderRefreshButtonTemplate")
@@ -462,9 +463,9 @@ groupScrollList:SetContentProvider(function()
     return ns.DB.dungeonGroups
 end)
 groupScrollList:SetLabelProvider(function(guid, group, button)
-    button.Name:SetText(group.name or "")
-    button.ActivityName:SetText(group.dungeon or "")
-    
+    button.Name:SetText((playerLocale[group.name] or group.name) or "")
+    button.ActivityName:SetText((playerLocale[group.dungeon] or group.dungeon) or "")
+
     -- role or class list
     if (group.dungeon) then
         local dungeon = DUNGEON_SET[group.dungeon]
@@ -473,7 +474,7 @@ groupScrollList:SetLabelProvider(function(guid, group, button)
                 -- show the roles
                 button.RoleDisplay:Show()
                 button.ClassDisplay:Hide()
-                
+
                 -- count the roles
                 local roleCount = {}
                 for class, count in pairs(group.members) do
@@ -527,7 +528,7 @@ end)
 local cancelFindGroupButton = CreateFrame("Button", nil, lfgGroupFrame, "GameMenuButtonTemplate")
 cancelFindGroupButton:SetPoint("BOTTOM", lfgGroupFrame, "BOTTOM", 0, 6)
 cancelFindGroupButton:SetSize(155, 20)
-cancelFindGroupButton:SetText("Cancel")
+cancelFindGroupButton:SetText(playerLocale["Cancel"])
 cancelFindGroupButton:SetNormalFontObject("GameFontNormal")
 cancelFindGroupButton:SetScript("OnClick", function()
     lfgDungeonFrame:Show()
@@ -561,7 +562,7 @@ lfmCreateFrame:SetAllPoints()
 
 local lfmGroupLabel = lfmCreateFrame:CreateFontString(nil, "ARTWORK", "MailFont_Large")
 lfmGroupLabel:SetPoint("TOPLEFT", lfmCreateFrame, "TOPLEFT", 12, -15)
-lfmGroupLabel:SetText("Create Group")
+lfmGroupLabel:SetText(playerLocale["Create Group"])
 lfmGroupLabel:SetTextColor(1, 0.82, 0)
 
 local lfmCreateGroupInset = CreateFrame("Frame", nil, lfmCreateFrame, "InsetFrameTemplate")
@@ -573,7 +574,7 @@ lfmCreateGroupInset:SetPoint("BOTTOM", lfmCreateFrame, "BOTTOM", 0, 33)
 local lfmDungeonLabel = lfmCreateFrame:CreateFontString(nil, "ARTWORK")
 lfmDungeonLabel:SetPoint("TOPLEFT", lfmCreateGroupInset, "TOPLEFT", 12, -12)
 lfmDungeonLabel:SetFontObject("GameFontNormalLEFT")
-lfmDungeonLabel:SetText("Dungeon")
+lfmDungeonLabel:SetText(playerLocale["Dungeon"])
 
 local lfmSelectDungeonDropDown = CreateFrame("Frame", nil, lfmCreateGroupInset, "UIDropDownMenuTemplate")
 lfmSelectDungeonDropDown:SetPoint("TOP", lfmDungeonLabel, "BOTTOM", 0, -6)
@@ -587,7 +588,7 @@ UIDropDownMenu_Initialize(lfmSelectDungeonDropDown, function(self, level, menuLi
             menuItem.text = dungeon.name
             menuItem.func = function()
                 lfmSelectDungeonDropDown.value = dungeon.name
-                UIDropDownMenu_SetText(lfmSelectDungeonDropDown, dungeon.name)
+                UIDropDownMenu_SetText(lfmSelectDungeonDropDown, playerLocale[dungeon.name] or dungeon.name)
             end
             UIDropDownMenu_AddButton(menuItem)
         end
@@ -599,7 +600,7 @@ lfmNameLabel:SetPoint("TOP", lfmSelectDungeonDropDown, "BOTTOM", 0, -6)
 lfmNameLabel:SetPoint("LEFT", lfmCreateGroupInset, "LEFT", 12, 0)
 lfmNameLabel:SetHeight(20)
 lfmNameLabel:SetFontObject("GameFontNormalLEFT")
-lfmNameLabel:SetText("Name")
+lfmNameLabel:SetText(playerLocale["Name"])
 
 local lfmNameEditBox = CreateFrame("Editbox", nil, lfmCreateGroupInset, "InputBoxInstructionsTemplate")
 lfmNameEditBox:SetPoint("TOPLEFT", lfmNameLabel, "BOTTOMLEFT", 12, 0)
@@ -612,7 +613,7 @@ lfmCommentLabel:SetPoint("TOP", lfmNameEditBox, "BOTTOM", 0, -6)
 lfmCommentLabel:SetPoint("LEFT", lfmCreateGroupInset, "LEFT", 12, 0)
 lfmCommentLabel:SetHeight(20)
 lfmCommentLabel:SetFontObject("GameFontNormalLEFT")
-lfmCommentLabel:SetText("Comment")
+lfmCommentLabel:SetText(playerLocale["Comment"])
 
 local lfmCommentEditBox = CreateFrame("Editbox", nil, lfmCreateGroupInset, "InputBoxInstructionsTemplate")
 lfmCommentEditBox:SetPoint("TOPLEFT", lfmCommentLabel, "BOTTOMLEFT", 12, 0)
@@ -625,7 +626,7 @@ lfmRoleLabel:SetPoint("TOP", lfmCommentEditBox, "BOTTOM", 0, -6)
 lfmRoleLabel:SetPoint("LEFT", lfmCreateGroupInset, "LEFT", 12, 0)
 lfmRoleLabel:SetHeight(20)
 lfmRoleLabel:SetFontObject("GameFontNormalLEFT")
-lfmRoleLabel:SetText("Roles")
+lfmRoleLabel:SetText(playerLocale["Roles"])
 
 local lfmRolesFrame = CreateFrame("Frame", nil, lfmCreateGroupInset, "DungeonFinderRoleSelectionFrameTemplate")
 lfmRolesFrame:SetPoint("CENTER", lfmCreateGroupInset, "CENTER", 0, 0)
@@ -636,7 +637,7 @@ lfmClassLabel:SetPoint("TOP", lfmRolesFrame, "BOTTOM", 0, -6)
 lfmClassLabel:SetPoint("LEFT", lfmCreateGroupInset, "LEFT", 12, 0)
 lfmClassLabel:SetHeight(20)
 lfmClassLabel:SetFontObject("GameFontNormalLEFT")
-lfmClassLabel:SetText("Classes")
+lfmClassLabel:SetText(playerLocale["Classes"])
 
 local lfmClassesFrame = CreateFrame("Frame", nil, lfmCreateFrame, "DungeonFinderClassFrameTemplate")
 lfmClassesFrame:SetPoint("CENTER", lfmCreateGroupInset, "CENTER", 0, 0)
@@ -645,7 +646,7 @@ lfmClassesFrame:SetPoint("TOP", lfmRolesFrame, "BOTTOM", 0, -28)
 local createGroupButton = CreateFrame("Button", nil, lfmCreateFrame, "GameMenuButtonTemplate")
 createGroupButton:SetPoint("BOTTOM", lfmCreateFrame, "BOTTOM", 0, 6)
 createGroupButton:SetSize(155, 20)
-createGroupButton:SetText("Create Group")
+createGroupButton:SetText(playerLocale["Create Group"])
 createGroupButton:SetNormalFontObject("GameFontNormal")
 createGroupButton:SetScript("OnClick", function()
     -- check that all necessary fields are set
@@ -689,18 +690,18 @@ lfmInviteFrame:Hide()
 
 local lfmDungeonNameLabel = lfmInviteFrame:CreateFontString(nil, "ARTWORK", "MailFont_Large")
 lfmDungeonNameLabel:SetPoint("TOPLEFT", lfmInviteFrame, "TOPLEFT", 12, -15)
-lfmDungeonNameLabel:SetText("Dungeon Name")
+lfmDungeonNameLabel:SetText(playerLocale["Dungeon Name"])
 lfmDungeonNameLabel:SetTextColor(1, 0.82, 0)
 
 local lfmGroupNameLabel = lfmInviteFrame:CreateFontString(nil, "ARTWORK")
 lfmGroupNameLabel:SetPoint("TOPLEFT", lfmDungeonNameLabel, "BOTTOMLEFT", 0, -6)
 lfmGroupNameLabel:SetFontObject("GameFontHighlightLEFT")
-lfmGroupNameLabel:SetText("Group Name")
+lfmGroupNameLabel:SetText(playerLocale["Group Name"])
 
 local lfmGroupCommentLabel = lfmInviteFrame:CreateFontString(nil, "ARTWORK")
 lfmGroupCommentLabel:SetPoint("TOPLEFT", lfmGroupNameLabel, "BOTTOMLEFT", 0, -6)
 lfmGroupCommentLabel:SetFontObject("GameFontDisableSmallLEFT")
-lfmGroupCommentLabel:SetText("Comment")
+lfmGroupCommentLabel:SetText(playerLocale["Comment"])
 
 local lfmRefreshButton = CreateFrame("Button", nil, lfmInviteFrame, "DungeonFinderRefreshButtonTemplate")
 lfmRefreshButton:SetSize(32, 32)
@@ -730,7 +731,7 @@ lfmMemberScrollList:SetContentProvider(function()
 end)
 lfmMemberScrollList:SetLabelProvider(function(guid, player, button)
     button.PlayerName:SetText(player.name)
-    button.ClassName:SetText(player.class)
+    button.ClassName:SetText(playerLocale[player.class] or player.class)
     button.Level:SetText(tostring(player.level))
 
     -- adjust role buttons
@@ -761,7 +762,7 @@ lfmMemberScrollList:Update()
 local cancelCreateGroupButton = CreateFrame("Button", nil, lfmInviteFrame, "GameMenuButtonTemplate")
 cancelCreateGroupButton:SetPoint("BOTTOM", lfmInviteFrame, "BOTTOM", 0, 6)
 cancelCreateGroupButton:SetSize(155, 20)
-cancelCreateGroupButton:SetText("Cancel")
+cancelCreateGroupButton:SetText(playerLocale["Cancel"])
 cancelCreateGroupButton:SetNormalFontObject("GameFontNormal")
 cancelCreateGroupButton:SetScript("OnClick", function()
     lfmCreateFrame:Show()
@@ -772,7 +773,7 @@ cancelCreateGroupButton:SetScript("OnClick", function()
 end)
 -- update the dungeon info in the label frames
 lfmInviteFrame:SetScript("OnShow", function()
-    lfmDungeonNameLabel:SetText(ns.DB.group.dungeon)
+    lfmDungeonNameLabel:SetText(playerLocale[ns.DB.group.dungeon] or ns.DB.group.dungeon)
     lfmGroupNameLabel:SetText(ns.DB.group.name)
     lfmGroupCommentLabel:SetText(ns.DB.group.comment)
 end)
