@@ -586,7 +586,7 @@ lfmSelectDungeonDropDown:SetScript("OnShow", function()
         for index, dungeon in ipairs(DUNGEON_LIST) do
             if (dungeon.category) then
                 local menuItem = UIDropDownMenu_CreateInfo()
-                menuItem.text = dungeon.name
+                menuItem.text = playerLocale[dungeon.name] or dungeon.name
                 menuItem.func = function()
                     lfmSelectDungeonDropDown.value = dungeon.name
                     UIDropDownMenu_SetText(lfmSelectDungeonDropDown, playerLocale[dungeon.name] or dungeon.name)
