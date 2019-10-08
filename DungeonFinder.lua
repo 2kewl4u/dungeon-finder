@@ -580,20 +580,23 @@ local lfmSelectDungeonDropDown = CreateFrame("Frame", nil, lfmCreateGroupInset, 
 lfmSelectDungeonDropDown:SetPoint("TOP", lfmDungeonLabel, "BOTTOM", 0, -6)
 lfmSelectDungeonDropDown:SetPoint("LEFT", lfmCreateGroupInset, "LEFT", 0, 0)
 lfmSelectDungeonDropDown:SetPoint("RIGHT", lfmCreateGroupInset, "RIGHT", -12, 0)
-UIDropDownMenu_SetWidth(lfmSelectDungeonDropDown, 284) -- Use in place :SetWidth
-UIDropDownMenu_Initialize(lfmSelectDungeonDropDown, function(self, level, menuList)
-    for index, dungeon in ipairs(DUNGEON_LIST) do
-        if (dungeon.category) then
-            local menuItem = UIDropDownMenu_CreateInfo()
-            menuItem.text = dungeon.name
-            menuItem.func = function()
-                lfmSelectDungeonDropDown.value = dungeon.name
-                UIDropDownMenu_SetText(lfmSelectDungeonDropDown, playerLocale[dungeon.name] or dungeon.name)
+lfmSelectDungeonDropDown:SetScript("OnShow", function()
+    UIDropDownMenu_SetWidth(lfmSelectDungeonDropDown, 284) -- Use in place :SetWidth
+    UIDropDownMenu_Initialize(lfmSelectDungeonDropDown, function(self, level, menuList)
+        for index, dungeon in ipairs(DUNGEON_LIST) do
+            if (dungeon.category) then
+                local menuItem = UIDropDownMenu_CreateInfo()
+                menuItem.text = dungeon.name
+                menuItem.func = function()
+                    lfmSelectDungeonDropDown.value = dungeon.name
+                    UIDropDownMenu_SetText(lfmSelectDungeonDropDown, playerLocale[dungeon.name] or dungeon.name)
+                end
+                UIDropDownMenu_AddButton(menuItem, level)
             end
-            UIDropDownMenu_AddButton(menuItem)
         end
-    end
+    end)
 end)
+
 
 local lfmNameLabel = lfmCreateFrame:CreateFontString(nil, "ARTWORK")
 lfmNameLabel:SetPoint("TOP", lfmSelectDungeonDropDown, "BOTTOM", 0, -6)
@@ -794,14 +797,14 @@ SLASH_DungeonFinder1 = "/lfg"
 SLASH_DungeonFinder2 = "/lfm"
 SLASH_DungeonFinder3 = "/dungeonfinder"
 SlashCmdList["DungeonFinder"] = function(s)
-    if (not UnitAffectingCombat("player")) then
+--    if (not UnitAffectingCombat("player")) then
         JoinChannelByName(ADDON_CHANNEL)
         if (UIFrame:IsShown()) then
             HideUIPanel(UIFrame)
         else
             ShowUIPanel(UIFrame)
         end
-    end
+--    end
 end
 
 

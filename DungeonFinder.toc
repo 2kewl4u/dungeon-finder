@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Title: Dungeon Finder
-## Version: 0.1.6
+## Version: 0.1.7
 ## Author: Ben
 ## Notes: DungeonFinder Tool for World of Warcraft Classic
 ## DefaultState: Enabled
