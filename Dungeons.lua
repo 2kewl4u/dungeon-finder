@@ -19,15 +19,15 @@ local DUNGEONS = {
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 10,
-        minimumLevel = 15,
-        maximumLevel = 25
+        minimumLevel = 17,
+        maximumLevel = 24
     },
     {
         name = "The Deadmines",
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 10,
-        minimumLevel = 18,
+        minimumLevel = 17,
         maximumLevel = 23
     },
     {
@@ -43,80 +43,80 @@ local DUNGEONS = {
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 15,
-        minimumLevel = 20,
-        maximumLevel = 30
+        minimumLevel = 24,
+        maximumLevel = 32
     },
     {
         name = "The Stockade",
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 15,
-        minimumLevel = 22,
-        maximumLevel = 30
+        minimumLevel = 23,
+        maximumLevel = 32
     },
     {
         name = "Gnomeregan",
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 19,
-        minimumLevel = 24,
-        maximumLevel = 34
+        minimumLevel = 26,
+        maximumLevel = 38
     },
     {
         name = "Razorfen Kraul",
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 25,
-        minimumLevel = 30,
-        maximumLevel = 40
+        minimumLevel = 27,
+        maximumLevel = 37
     },
     {
         name = "Scarlet Monastery - Graveyard",
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 21,
-        minimumLevel = 26,
-        maximumLevel = 36
+        minimumLevel = 29,
+        maximumLevel = 38
     },
     {
         name = "Scarlet Monastery - Library",
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 21,
-        minimumLevel = 29,
-        maximumLevel = 39
+        minimumLevel = 33,
+        maximumLevel = 41
     },
     {
         name = "Scarlet Monastery - Armory",
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 21,
-        minimumLevel = 32,
-        maximumLevel = 42
+        minimumLevel = 36,
+        maximumLevel = 44
     },
     {
         name = "Scarlet Monastery - Cathedral",
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 21,
-        minimumLevel = 35,
-        maximumLevel = 45
+        minimumLevel = 38,
+        maximumLevel = 46
     },
     {
         name = "Uldaman",
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 30,
-        minimumLevel = 35,
-        maximumLevel = 45
+        minimumLevel = 41,
+        maximumLevel = 51
     },
     {
         name = "Razorfen Downs",
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 35,
-        minimumLevel = 40,
-        maximumLevel = 50
+        minimumLevel = 37,
+        maximumLevel = 46
     },
     {
         name = "Zul'Farrak",
@@ -124,7 +124,7 @@ local DUNGEONS = {
         maxPlayers = 5,
         requiredLevel = 39,
         minimumLevel = 44,
-        maximumLevel = 54
+        maximumLevel = 52
     },
     {
         name = "Maraudon",
@@ -139,7 +139,7 @@ local DUNGEONS = {
         category = CATEGORY_DUNGEON,
         maxPlayers = 5,
         requiredLevel = 45,
-        minimumLevel = 55,
+        minimumLevel = 50,
         maximumLevel = 60
     },
     {
