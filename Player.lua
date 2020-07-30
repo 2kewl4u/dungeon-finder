@@ -4,8 +4,6 @@ local _, ns = ...;
 local utils = ns.utils
 
 local Player = {
-    guid,
-    -- the name of the player
     name,
     -- the class of the player
     class,
@@ -25,7 +23,6 @@ end
 
 function Player.new(name, class, level, roles, dungeons)
     local self = setmetatable({}, Player)
-    self.guid = UnitGUID("player")
     self.name = name
     self.class = class
     self.level = level
@@ -106,7 +103,6 @@ function Player:encode()
     -- update level
     player.level = UnitLevel("player")
     local list = {
-        player.guid,
         player.name,
         player.class,
         tostring(player.level),
@@ -123,12 +119,11 @@ function Player.decode(encoded)
             table.insert(list, element)
         end, ";")
         
-        local guid = list[1]
-        local name = list[2]
-        local class = list[3]
-        local level = tonumber(list[4])
-        local roles = list[5]
-        local dungeons = list[6]
+        local name = list[1]
+        local class = list[2]
+        local level = tonumber(list[3])
+        local roles = list[4]
+        local dungeons = list[5]
         
         -- decode the roles and dungeons
         roles = utils.fromCSV(roles, function(list, element)
@@ -138,8 +133,6 @@ function Player.decode(encoded)
             list[element] = true
         end)
         
-        local player = Player.new(name, class, level, roles, dungeons)
-        player.guid = guid
-        return player
+        return Player.new(name, class, level, roles, dungeons)
     end
 end

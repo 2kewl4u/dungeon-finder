@@ -20,11 +20,11 @@ ns.loadSavedVariables = function()
         -- restore object methods
         ns.DB.player = Player.of(ns.DB.player)
         ns.DB.group = Group.of(ns.DB.group)
-        for guid, group in pairs(ns.DB.dungeonGroups) do
-            ns.DB.dungeonGroups[guid] = Group.of(group)
+        for sender, group in pairs(ns.DB.dungeonGroups) do
+            ns.DB.dungeonGroups[sender] = Group.of(group)
         end
-        for guid, player in pairs(ns.DB.applicants) do
-            ns.DB.applicants[guid] = Player.of(player)
+        for sender, player in pairs(ns.DB.applicants) do
+            ns.DB.applicants[sender] = Player.of(player)
         end
     else
         -- initialize the DB if it was not present

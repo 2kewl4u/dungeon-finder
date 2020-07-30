@@ -4,7 +4,6 @@ local _, ns = ...;
 local utils = ns.utils
 
 local Group = {
-    guid,
     name,
     dungeon,
     -- a set of roles that are searched for the group
@@ -26,7 +25,6 @@ end
 
 function Group.new(name, dungeon, roles, classes, created, comment, leader, members)
     local self = setmetatable({}, Group)
-    self.guid = UnitGUID("player")
     self.name = name or ""
     self.dungeon = dungeon or ""
     self.roles = roles or {}
@@ -79,7 +77,6 @@ function Group:encode()
     end)
 
     local list = {
-        group.guid,
         group.name,
         group.dungeon,
         roles,
@@ -99,15 +96,14 @@ function Group.decode(encoded)
             table.insert(list, element)
         end, ";")
         
-        local guid = list[1]
-        local name = list[2]
-        local dungeon = list[3]
-        local roles = list[4]
-        local classes = list[5]
-        local created = tonumber(list[6])
-        local comment = list[7]
-        local leader = list[8]
-        local members = list[9]
+        local name = list[1]
+        local dungeon = list[2]
+        local roles = list[3]
+        local classes = list[4]
+        local created = tonumber(list[5])
+        local comment = list[6]
+        local leader = list[7]
+        local members = list[8]
         
         -- decode the roles and classes
         roles = utils.fromCSV(roles, function(list, element)
@@ -124,8 +120,6 @@ function Group.decode(encoded)
             end
         end)
         
-        local group = Group.new(name, dungeon, roles, classes, created, comment, leader, members)
-        group.guid = guid
-        return group
+        return Group.new(name, dungeon, roles, classes, created, comment, leader, members)
     end
 end

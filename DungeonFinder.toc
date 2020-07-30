@@ -1,6 +1,6 @@
-## Interface: 11302
+## Interface: 11305
 ## Title: Dungeon Finder
-## Version: 0.1.7
+## Version: 1.0.0
 ## Author: Ben
 ## Notes: DungeonFinder Tool for World of Warcraft Classic
 ## DefaultState: Enabled
@@ -22,4 +22,10 @@ Dungeons.lua
 Player.lua
 Group.lua
 SavedVariables.lua
+
+events\Events.lua
+events\LFGInfoEvent.lua
+events\LFMInfoEvent.lua
+Broadcast.lua
+
 DungeonFinder.lua

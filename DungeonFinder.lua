@@ -3,6 +3,7 @@ local _, ns = ...;
 -- imports
 local playerLocale= LibStub("AceLocale-3.0"):GetLocale("DungeonFinder")
 local AddonMessage= ns.AddonMessage
+local Broadcast = ns.Broadcast
 local Group= ns.Group
 local Player= ns.Player
 local ScrollList= ns.ScrollList
@@ -44,117 +45,6 @@ local ADDON_CHANNEL= "DungeonFinder"
 local EVENT_LFM= "DF_LFM"
 local EVENT_LFG= "DF_LFG"
 local EVENT_CANCEL= "DF_CANCEL"
-
-local refeshLFGFields
-local refreshLFMFields
-
-local function LFMBroadcast()
-    ns.DB.lfm = true
-    ns.DB.applicants = {}
-    ns.DB.group:updateMembers()
-    local msg = ns.DB.group:encode()
-    local channelId = GetChannelName(ADDON_CHANNEL);
-    AddonMessage.Send(EVENT_LFM, msg, "CHANNEL", channelId)
-    PlaySound(SOUNDKIT.PVP_ENTER_QUEUE)
-end
-
-local function LFGBroadcast()
-    ns.DB.lfg = true
-    ns.DB.dungeonGroups = {}
-    local msg = ns.DB.player:encode()
-    local channelId = GetChannelName(ADDON_CHANNEL);
-    AddonMessage.Send(EVENT_LFG, msg, "CHANNEL", channelId)
-    PlaySound(SOUNDKIT.PVP_ENTER_QUEUE)
-end
-
-local function LFGCancel()
-    ns.DB.lfg = false
-    ns.DB.dungeonGroups = {}
-    local msg = UnitGUID("player")..";LFG"
-    local channelId = GetChannelName(ADDON_CHANNEL);
-    AddonMessage.Send(EVENT_CANCEL, msg, "CHANNEL", channelId)
-    PlaySound(SOUNDKIT.LFG_DENIED)
-end
-
-local function LFMCancel()
-    ns.DB.lfm = false
-    ns.DB.applicants = {}
-    local msg = UnitGUID("player")..";LFM"
-    local channelId = GetChannelName(ADDON_CHANNEL);
-    AddonMessage.Send(EVENT_CANCEL, msg, "CHANNEL", channelId)
-    PlaySound(SOUNDKIT.LFG_DENIED)
-end
-
-local function respondWithLFG(sender)
-    if (ns.DB.lfg) then
-        local msg = ns.DB.player:encode()
-        AddonMessage.Send(EVENT_LFG, msg, "WHISPER", sender)
-    end
-end
-
-local function respondWithLFM(sender)
-    if (ns.DB.lfm) then
-        ns.DB.group:updateMembers()
-        local msg = ns.DB.group:encode()
-        AddonMessage.Send(EVENT_LFM, msg, "WHISPER", sender)
-    end
-end
-
-local function checkGUID(guid, sender)
-    if (guid) then
-        local locClass, engClass, locRace, engRace, gender,
-            name, server = GetPlayerInfoByGUID(guid)
-        return name == sender
-    end
-end
-
--- TODO add/remove register for channel on demand
-local function receiveAddonMessage(prefix, message, type, sender)
-    -- remove the realm part
-    sender = strsplit("-", sender, 2)
-    -- verify that the message of the sender contains the player as guid
-    local guid, rest = strsplit(";", message, 2)
-    if (not checkGUID(guid, sender)) then
-        print("invalid message")
-        return -- invalid message
-    end
-
-    if (prefix == EVENT_LFM and ns.DB.lfg) then
-        local group = Group.decode(message)
-        if (group) then
-            -- filter the message if we actually need it
-            if (group:needsPlayer(ns.DB.player)) then
-                ns.DB.dungeonGroups[group.guid] = group
-                refeshLFGFields()
-
-                if (type == "CHANNEL") then
-                    respondWithLFG(sender)
-                end
-            end
-        end
-    elseif (prefix == EVENT_LFG) then
-        local player = Player.decode(message)
-        if (player) then
-            -- filter the players according to our group selection
-            if (ns.DB.group:needsPlayer(player)) then
-                ns.DB.applicants[player.guid] = player
-                refreshLFMFields()
-
-                if (type == "CHANNEL") then
-                    respondWithLFM(sender)
-                end
-            end
-        end
-    elseif (prefix == EVENT_CANCEL) then
-        if (rest == "LFM") then
-            ns.DB.dungeonGroups[guid] = nil
-            refeshLFGFields()
-        elseif (rest == "LFG") then
-            ns.DB.applicants[guid] = nil
-            refreshLFMFields()
-        end
-    end
-end
 
 -- UI
 local WINDOW_WIDTH = 350
@@ -406,7 +296,8 @@ findGroupButton:SetText(playerLocale["Find Group"])
 findGroupButton:SetNormalFontObject("GameFontNormal")
 findGroupButton:SetScript("OnClick", function()
     if (ns.DB.player:isLFGReady()) then
-        LFGBroadcast()
+        Broadcast.lfg()
+        PlaySound(SOUNDKIT.PVP_ENTER_QUEUE)
         lfgDungeonFrame:Hide()
         lfgGroupFrame:Show()
     else
@@ -433,8 +324,9 @@ local lfgRefreshButton = CreateFrame("Button", nil, lfgGroupFrame, "DungeonFinde
 lfgRefreshButton:SetSize(32, 32)
 lfgRefreshButton:SetPoint("TOPRIGHT", lfgGroupFrame, "TOPRIGHT", -6, -6)
 lfgRefreshButton:SetScript("OnClick", function()
-    LFGBroadcast()
-    refeshLFGFields()
+    Broadcast.lfg()
+    PlaySound(SOUNDKIT.PVP_ENTER_QUEUE)
+    ns.refeshLFGFields()
 end)
 
 --local refreshButtonTexture = lfgRefreshButton:CreateTexture(nil, "ARTWORK")
@@ -462,7 +354,7 @@ groupScrollList:SetButtonHeight(36)
 groupScrollList:SetContentProvider(function()
     return ns.DB.dungeonGroups
 end)
-groupScrollList:SetLabelProvider(function(guid, group, button)
+groupScrollList:SetLabelProvider(function(name, group, button)
     button.Name:SetText((playerLocale[group.name] or group.name) or "")
     button.ActivityName:SetText((playerLocale[group.dungeon] or group.dungeon) or "")
 
@@ -534,7 +426,8 @@ cancelFindGroupButton:SetScript("OnClick", function()
     lfgDungeonFrame:Show()
     lfgGroupFrame:Hide()
     -- send cancel group message
-    LFGCancel()
+    Broadcast.lfgc()
+    PlaySound(SOUNDKIT.LFG_DENIED)
 end)
 
 --{"groupfinder-icon-role-large-dps", [[Interface\LFGFrame\GroupFinder.BLP]], 29, 29, 0.6591796875, 0.6875, 0.1123046875, 0.140625, false, false},
@@ -676,7 +569,8 @@ createGroupButton:SetScript("OnClick", function()
         ns.DB.group = Group.new(groupName, dungeonName,
             roles, classes, nil, comment, nil, nil)
         -- send group info
-        LFMBroadcast()
+        Broadcast.lfm()
+        PlaySound(SOUNDKIT.PVP_ENTER_QUEUE)
         lfmCreateFrame:Hide()
         lfmInviteFrame:Show()
     else
@@ -710,8 +604,9 @@ local lfmRefreshButton = CreateFrame("Button", nil, lfmInviteFrame, "DungeonFind
 lfmRefreshButton:SetSize(32, 32)
 lfmRefreshButton:SetPoint("TOPRIGHT", lfmInviteFrame, "TOPRIGHT", -6, -6)
 lfmRefreshButton:SetScript("OnClick", function()
-    LFMBroadcast()
-    refreshLFMFields()
+    Broadcast.lfm()
+    ns.refreshLFMFields()
+    PlaySound(SOUNDKIT.PVP_ENTER_QUEUE)
 end)
 
 -- TODO show member count
@@ -732,7 +627,7 @@ lfmMemberScrollList:SetButtonHeight(36)
 lfmMemberScrollList:SetContentProvider(function()
     return ns.DB.applicants
 end)
-lfmMemberScrollList:SetLabelProvider(function(guid, player, button)
+lfmMemberScrollList:SetLabelProvider(function(name, player, button)
     button.PlayerName:SetText(player.name)
     button.ClassName:SetText(playerLocale[player.class] or player.class)
     button.Level:SetText(tostring(player.level))
@@ -756,8 +651,8 @@ lfmMemberScrollList:SetLabelProvider(function(guid, player, button)
     end)
     button.DeclineButton:SetScript("OnClick", function()
         -- remove the player from the list
-        ns.DB.applicants[player.guid] = nil
-        refreshLFMFields()
+        ns.DB.applicants[name] = nil
+        ns.refreshLFMFields()
     end)
 end)
 lfmMemberScrollList:Update()
@@ -770,9 +665,9 @@ cancelCreateGroupButton:SetNormalFontObject("GameFontNormal")
 cancelCreateGroupButton:SetScript("OnClick", function()
     lfmCreateFrame:Show()
     lfmInviteFrame:Hide()
-    PlaySound(SOUNDKIT.LFG_DENIED)
     -- send cancel group message
-    LFMCancel()
+    Broadcast.lfmc()
+    PlaySound(SOUNDKIT.LFG_DENIED)
 end)
 -- update the dungeon info in the label frames
 lfmInviteFrame:SetScript("OnShow", function()
@@ -781,11 +676,11 @@ lfmInviteFrame:SetScript("OnShow", function()
     lfmGroupCommentLabel:SetText(ns.DB.group.comment)
 end)
 
-refeshLFGFields = function()
+ns.refeshLFGFields = function()
     groupScrollList:Update()
 end
 
-refreshLFMFields = function()
+ns.refreshLFMFields = function()
     lfmMemberScrollList:Update()
 end
 -- TODO add notifications
@@ -810,27 +705,24 @@ end
 
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("VARIABLES_LOADED")
-eventFrame:RegisterEvent("CHAT_MSG_ADDON")
---eventFrame:RegisterEvent("RAID_TARGET_UPDATE")
+--eventFrame:RegisterEvent("CHAT_MSG_SYSTEM")
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_LFM)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_LFG)
 C_ChatInfo.RegisterAddonMessagePrefix(EVENT_CANCEL)
 eventFrame:SetScript("OnEvent", function(self, event, arg1, arg2, arg3, arg4)
     if (event == "VARIABLES_LOADED") then
         ns.loadSavedVariables()
-    elseif (event == "CHAT_MSG_ADDON") then
-        -- print("received addon message from "..arg4)
-        -- print(arg2)
-        if (arg1 == EVENT_LFM or arg1 == EVENT_LFG or arg1 == EVENT_CANCEL) then
-            AddonMessage.Receive(arg1, arg2, arg3, arg4, receiveAddonMessage)
-        end
-    elseif (event == "RAID_TARGET_UPDATE") then
+    elseif (event == "CHAT_MSG_SYSTEM") then
         -- when joining a group, cancel the LFG
-        if (IsInGroup() and ns.DB.lfg) then
-            LFGCancel()
-            lfgDungeonFrame:Show()
-            lfgGroupFrame:Hide()
-        end
+--        if (IsInGroup() and ns.DB.lfg) then
+--            LFGCancel()
+--            lfgDungeonFrame:Show()
+--            lfgGroupFrame:Hide()
+--        end
+        -- update the lfm status when members join
+--        if (IsInGroup() and ns.DB.lfm) then
+--            LFMBroadcast()
+--        end
     end
 end)
 
