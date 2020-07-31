@@ -50,6 +50,26 @@ local EVENT_CANCEL= "DF_CANCEL"
 local WINDOW_WIDTH = 350
 local WINDOW_HEIGHT = 450
 
+-- set a delay in seconds until a new refresh is accepted
+local REFRESH_DELAY = 15
+local refreshTime
+
+---
+-- Checks whether is allowed to send another refresh broadcast. The delay is
+-- necessary to prevent refresh spamming.
+-- 
+-- @return #boolean
+--          true if blocked, false if it is allowed to refresh
+--
+local function isRefreshDelay()
+    local now = time()
+    local delay = refreshTime and ((now - refreshTime) < REFRESH_DELAY)
+    if (not delay) then
+        refreshTime = now
+    end
+    return delay
+end
+
 local UIFrame = CreateFrame("Frame", "DungeonFinderIU", UIParent, "UIPanelDialogTemplate")
 UIFrame:SetAttribute("UIPanelLayout-defined", true)
 UIFrame:SetAttribute("UIPanelLayout-enabled", true)
@@ -324,9 +344,11 @@ local lfgRefreshButton = CreateFrame("Button", nil, lfgGroupFrame, "DungeonFinde
 lfgRefreshButton:SetSize(32, 32)
 lfgRefreshButton:SetPoint("TOPRIGHT", lfgGroupFrame, "TOPRIGHT", -6, -6)
 lfgRefreshButton:SetScript("OnClick", function()
-    Broadcast.lfg()
-    PlaySound(SOUNDKIT.PVP_ENTER_QUEUE)
-    ns.refeshLFGFields()
+    if (not isRefreshDelay()) then
+        Broadcast.lfg()
+        PlaySound(SOUNDKIT.PVP_ENTER_QUEUE)
+        ns.refeshLFGFields()
+    end
 end)
 
 --local refreshButtonTexture = lfgRefreshButton:CreateTexture(nil, "ARTWORK")
@@ -604,9 +626,11 @@ local lfmRefreshButton = CreateFrame("Button", nil, lfmInviteFrame, "DungeonFind
 lfmRefreshButton:SetSize(32, 32)
 lfmRefreshButton:SetPoint("TOPRIGHT", lfmInviteFrame, "TOPRIGHT", -6, -6)
 lfmRefreshButton:SetScript("OnClick", function()
-    Broadcast.lfm()
-    ns.refreshLFMFields()
-    PlaySound(SOUNDKIT.PVP_ENTER_QUEUE)
+    if (not isRefreshDelay()) then
+        Broadcast.lfm()
+        ns.refreshLFMFields()
+        PlaySound(SOUNDKIT.PVP_ENTER_QUEUE)
+    end
 end)
 
 -- TODO show member count
